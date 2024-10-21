@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 public class PokedexContextFactory : IDesignTimeDbContextFactory<PokedexContext>
@@ -13,14 +12,7 @@ public class PokedexContextFactory : IDesignTimeDbContextFactory<PokedexContext>
                         .Build();
 
         dbType targetDb = dbType.SQLSERVER;
-        switch (args[0])
-        {
-            case "postgre":
-                targetDb = dbType.POSTGRE;
-                break;
-            case "sqlserver":
-                break;
-        }
+        Enum.TryParse(args[0], true, out targetDb);
 
         return new PokedexContext(targetDb, config);
     }

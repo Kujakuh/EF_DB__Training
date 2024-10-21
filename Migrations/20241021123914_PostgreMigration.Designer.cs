@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EF_DB.Migrations
 {
     [DbContext(typeof(PokedexContext))]
-    [Migration("20241018123932_InitMigPostgre")]
-    partial class InitMigPostgre
+    [Migration("20241021123914_PostgreMigration")]
+    partial class PostgreMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,21 +33,21 @@ namespace EF_DB.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<float?>("Height")
                         .HasColumnType("real");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Type1")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Type2")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<float?>("Widht")
                         .HasColumnType("real");
@@ -59,13 +59,20 @@ namespace EF_DB.Migrations
 
             modelBuilder.Entity("EF_DB.Types", b =>
                 {
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("varchar(255)");
 
-                    b.HasKey("Name");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Types");
                 });

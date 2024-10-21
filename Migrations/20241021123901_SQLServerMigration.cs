@@ -5,7 +5,7 @@
 namespace EF_DB.Migrations
 {
     /// <inheritdoc />
-    public partial class InitMig : Migration
+    public partial class SQLServerMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,12 +16,12 @@ namespace EF_DB.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: false),
                     Widht = table.Column<float>(type: "real", nullable: true),
                     Height = table.Column<float>(type: "real", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type2 = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "varchar(255)", nullable: true),
+                    Type1 = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Type2 = table.Column<string>(type: "varchar(50)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -32,12 +32,14 @@ namespace EF_DB.Migrations
                 name: "Types",
                 columns: table => new
                 {
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "varchar(50)", nullable: false),
+                    Description = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Types", x => x.Name);
+                    table.PrimaryKey("PK_Types", x => x.Id);
                 });
         }
 
