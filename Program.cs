@@ -8,44 +8,85 @@ class Program
     static void Main(string[] args)
     {
         IConfiguration config = new ConfigurationBuilder()
-                        .SetBasePath("D:\\Repos\\EF_DB")
+                        .SetBasePath("D:\\Storage\\Proyects\\C#\\EF_DB\\EF_DB__Training")
                         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                         .AddEnvironmentVariables()
                         .Build();
 
-        List<Pokemon> pokemonList = [];
+        Pokemon[] sourceRecordsPokemon = [];
+        Types[] sourceRecordsTypes = [];
 
-        using (PokedexContext db = new(dbType.POSTGRE, config))
+        using (PokedexContext db = new(dbType.SQLSERVER, config))
         {
             //AddSampleData(db);
 
-            pokemonList = [.. db.Pokemons];
+            sourceRecordsPokemon = db.Pokemons.AsNoTracking().ToArray();
+            sourceRecordsTypes = db.Types.AsNoTracking().ToArray();
 
-            //foreach (var item in pokemonList)
-            //{
-            //    db.Pokemons.Remove(item);
-            //}
+            DropRecords<Pokemon>(db, db.DbType);
+            DropRecords<Types>(db, db.DbType);
         }
-        
-        using (PokedexContext db = new(dbType.SQLSERVER, config))
+
+        using (PokedexContext db = new(dbType.POSTGRE, config))
         {
-            foreach (var item in pokemonList)
-            {
-                //container = new Pokemon(
-                //    item.Name, 
-                //    item.Type1,
-                //    item.Type2,
-                //    item.Height,
-                //    item.Widht,
-                //    item.Description
-                //    );
-
-                //db.Pokemons.Add(item);
-
-            }
-            db.SaveChanges();
+            AddRecordsIgnoreKey<Pokemon>(db, sourceRecordsPokemon);
+            AddRecordsIgnoreKey<Types>(db, sourceRecordsTypes);
         }
     }
+
+
+    static void DropRecords<T>(DbContext db, dbType serverType) where T : class
+    {
+        var table = db.Set<T>();
+        if (!table.Any()) return;
+
+        table.RemoveRange(table);
+        db.SaveChanges();
+
+        ResetIdentity<T>(db, serverType);
+    }
+
+    static void AddRecordsIgnoreKey<T>(DbContext db,T[] records) where T : class
+    {
+        var entityType = db.Model.FindEntityType(typeof(T));
+        var key = entityType.FindPrimaryKey().Properties.FirstOrDefault();
+
+        if (key == null) return;
+
+        foreach (var item in records)
+        {
+            var entry = db.Entry(item);
+
+            // Key previous value is disposable
+            // Let db generate a new value for the field
+            entry.Property(key.Name).IsTemporary = true;
+            // Gen insert command
+            entry.State = EntityState.Added;
+        }
+        db.SaveChanges();
+
+    }
+
+    static void ResetIdentity<T>(DbContext db, dbType serverType) where T : class
+    {
+        var entityType = db.Model.FindEntityType(typeof(T));
+        var tableName = entityType.GetTableName();
+
+
+        switch (serverType)
+        {
+            case dbType.POSTGRE:
+                var pgSchema = entityType.GetSchema() ?? "public";
+                db.Database.ExecuteSqlRaw($"TRUNCATE TABLE \"{pgSchema}\".\"{tableName}\" RESTART IDENTITY;");
+                break;
+            case dbType.SQLSERVER:
+                var sqlsSchema = entityType.GetSchema() ?? "dbo";
+                db.Database.ExecuteSqlRaw($"DBCC CHECKIDENT ('{sqlsSchema}.{tableName}', RESEED, 0);");
+                break;
+        }
+
+    }
+
 
     static public void AddSampleData(PokedexContext db)
     {
@@ -73,7 +114,32 @@ class Program
             new Pokemon("Cubone", "Tierra", "", 0.4f, 6.5f, "Siempre lleva el cráneo de su madre fallecida, lo que le da una apariencia triste. Es muy solitario y busca venganza por su pérdida.")
         ];
 
-        for (int i = 0; i < pokemons.Length; i++) db.Pokemons.Add(pokemons[i]);
+        Types[] types =
+        [
+            new Types { Name = "Normal", Description = "Pokémon sin afinidad elemental." },
+            new Types { Name = "Fuego", Description = "Pokémon que dominan el fuego y el calor." },
+            new Types { Name = "Agua", Description = "Pokémon que controlan el agua y son excelentes nadadores." },
+            new Types { Name = "Planta", Description = "Pokémon que utilizan la naturaleza y las plantas para combatir." },
+            new Types { Name = "Eléctrico", Description = "Pokémon que generan electricidad para atacar a sus oponentes." },
+            new Types { Name = "Hielo", Description = "Pokémon que manipulan el hielo y las bajas temperaturas." },
+            new Types { Name = "Lucha", Description = "Pokémon expertos en combate cuerpo a cuerpo y fuerza física." },
+            new Types { Name = "Veneno", Description = "Pokémon que utilizan toxinas y venenos para debilitar a sus enemigos." },
+            new Types { Name = "Tierra", Description = "Pokémon que manipulan la tierra y los suelos." },
+            new Types { Name = "Volador", Description = "Pokémon que vuelan y atacan desde el cielo." },
+            new Types { Name = "Psíquico", Description = "Pokémon que usan habilidades mentales y poderes psíquicos." },
+            new Types { Name = "Bicho", Description = "Pokémon de tipo insecto, a menudo rápidos y resistentes." },
+            new Types { Name = "Roca", Description = "Pokémon que tienen cuerpos duros y utilizan rocas para atacar." },
+            new Types { Name = "Fantasma", Description = "Pokémon espectrales que pueden atravesar objetos y asustar a sus oponentes." },
+            new Types { Name = "Dragón", Description = "Pokémon poderosos con habilidades de dragón." },
+            new Types { Name = "Siniestro", Description = "Pokémon que usan tácticas oscuras y engañosas para atacar." },
+            new Types { Name = "Acero", Description = "Pokémon con cuerpos metálicos que ofrecen gran defensa." },
+            new Types { Name = "Hada", Description = "Pokémon mágicos con habilidades encantadoras y poderosas." }
+        ];
+
+
+        foreach (var item in types) db.Types.Add(item);
+        foreach (var item in pokemons) db.Pokemons.Add(item);
+
 
         db.SaveChanges();
 

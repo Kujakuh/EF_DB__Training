@@ -8,7 +8,7 @@ namespace EF_DB
     public class Types
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Iden)]
         public int Id { get; set; }
 
         [Column(TypeName = "varchar(50)")]
