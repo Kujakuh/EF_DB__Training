@@ -8,14 +8,14 @@ public class PokedexContext : DbContext
     public DbSet<Types> Types { get; set; }
     public DbSet<PokemonTypesJT> PokemonTypesJT { get; set; }
 
-    public dbType DbType { get; }
+    public DbType DBType { get; }
 
     public IConfiguration Config { get; set; }
 
-    public PokedexContext(dbType target, IConfiguration config)
+    public PokedexContext(DbType target, IConfiguration config)
     {
         Config = config;
-        DbType = target;
+        DBType = target;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -30,17 +30,14 @@ public class PokedexContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        /*
-         *  TO REVIEW : Use of external settigns file
-         */
-        string dbName = "DB\\pkDex" + DbType.ToString() + ".db";
-        switch (DbType)
+        string dbName = $"pkDex.\"{DBType}\"";
+        switch (DBType)
         {
-            case dbType.SQLSERVER:
+            case DbType.SQLSERVER:
                 optionsBuilder.UseSqlServer(Config.GetConnectionString("local_SQLServerDB") + dbName);
                 break;
 
-            case dbType.POSTGRE:
+            case DbType.POSTGRE:
                 optionsBuilder.UseNpgsql(Config.GetConnectionString("local_PostgreDB") + dbName);
                 break;
         }

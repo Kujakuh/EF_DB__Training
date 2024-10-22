@@ -12,7 +12,7 @@ public class PokedexContextFactory : IDesignTimeDbContextFactory<PokedexContext>
                         .AddEnvironmentVariables()
                         .Build();
 
-        dbType targetDb = dbType.SQLSERVER;
+        DbType targetDb = DbType.SQLSERVER;
         Enum.TryParse(args[0], true, out targetDb);
 
         return new PokedexContext(targetDb, config);
