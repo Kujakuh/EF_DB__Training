@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EF_DB.Migrations
 {
     [DbContext(typeof(PokedexContext))]
-    [Migration("20241021161443_SQLServerMigration")]
-    partial class SQLServerMigration
+    [Migration("20241022080026_SQLS_Relations")]
+    partial class SQLS_Relations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,19 +42,27 @@ namespace EF_DB.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Type1")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Type2")
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<float?>("Widht")
+                    b.Property<float?>("Weight")
                         .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.ToTable("Pokemons");
+                });
+
+            modelBuilder.Entity("EF_DB.PokemonTypesJT", b =>
+                {
+                    b.Property<int>("PokemonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PokemonId", "TypeId");
+
+                    b.HasIndex("TypeId");
+
+                    b.ToTable("PokemonTypesJT");
                 });
 
             modelBuilder.Entity("EF_DB.Types", b =>
@@ -75,6 +83,30 @@ namespace EF_DB.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Types");
+                });
+
+            modelBuilder.Entity("EF_DB.PokemonTypesJT", b =>
+                {
+                    b.HasOne("EF_DB.Pokemon", "Pokemon")
+                        .WithMany("TypesReference")
+                        .HasForeignKey("PokemonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EF_DB.Types", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Pokemon");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("EF_DB.Pokemon", b =>
+                {
+                    b.Navigation("TypesReference");
                 });
 #pragma warning restore 612, 618
         }

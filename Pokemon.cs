@@ -14,35 +14,14 @@ namespace EF_DB
         [Column(TypeName = "varchar(50)")]
         public required string Name { get; set; }
 
-
-        public float? Widht { get; set; }
+        public float? Weight { get; set; }
         public float? Height{ get; set; }
 
         [Column(TypeName = "varchar(255)")]
         public string? Description { get; set; }
 
-        [Column(TypeName = "varchar(50)")]
-        public required string Type1 { get; set; }
-        [Column(TypeName = "varchar(50)")]
-        public string? Type2 { get; set; }
+        public List<Types>? Types { get; set; }
+        public List<PokemonTypesJT>? TypesReference {  get; set; }
 
-        [SetsRequiredMembers]
-        public Pokemon(string name, string type1) 
-        {
-            Name = name;
-            Type1 = type1;
-        }
-
-        [SetsRequiredMembers]
-        public Pokemon(string name, string type1, string? type2, float? height, float? widht, string? description)
-        {
-            Name = name;
-            Type1 = type1;
-            Type2 = type2;
-            Height = height;
-            Widht = widht;
-            Description = description;
-
-        }
     }
 }

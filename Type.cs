@@ -8,7 +8,7 @@ namespace EF_DB
     public class Types
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Iden)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Column(TypeName = "varchar(50)")]
@@ -17,12 +17,5 @@ namespace EF_DB
         [Column(TypeName = "varchar(255)")]
         public string? Description { get; set; }
 
-
-        [SetsRequiredMembers]
-        public Types(string name, string description)
-        {
-            Name = name;
-            Description = description;
-        }
     }
 }

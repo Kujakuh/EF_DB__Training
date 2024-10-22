@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EF_DB.Migrations
 {
     /// <inheritdoc />
-    public partial class PostgreMigration : Migration
+    public partial class Postgre_Relations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,6 +19,22 @@ namespace EF_DB.Migrations
                 oldClrType: typeof(int),
                 oldType: "int")
                 .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "TypeId",
+                table: "PokemonTypesJT",
+                type: "integer",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "PokemonId",
+                table: "PokemonTypesJT",
+                type: "integer",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
@@ -41,6 +57,22 @@ namespace EF_DB.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer")
                 .OldAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "TypeId",
+                table: "PokemonTypesJT",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "integer");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "PokemonId",
+                table: "PokemonTypesJT",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "integer");
 
             migrationBuilder.AlterColumn<int>(
                 name: "Id",
